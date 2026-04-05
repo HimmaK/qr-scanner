@@ -16,43 +16,42 @@
 
 <script>
 let scanned = false;
-let html5QrCode;
 
 function startScanner() {
-  html5QrCode = new Html5Qrcode("reader");
 
-  html5QrCode.start(
-    { facingMode: "environment" },
-    { fps: 10, qrbox: 250 },
-    (decodedText) => {
+  const scanner = new Html5QrcodeScanner("reader", {
+    fps: 10,
+    qrbox: { width: 250, height: 250 }
+  });
 
-      if (scanned) return;
-      scanned = true;
+  scanner.render((decodedText) => {
 
-      // 🔐 Send secure request
-      fetch(decodedText + "&scanner=HIMMA")
-        .then(res => res.text())
-        .then(data => {
+    if (scanned) return;
+    scanned = true;
 
-          document.getElementById("result").innerHTML = data;
+    document.getElementById("result").innerHTML = "Processing...";
 
-          if (data.includes("Allowed")) {
-            document.body.style.background = "green";
-          } else {
-            document.body.style.background = "red";
-          }
+    // 🔐 Send secure request
+    fetch(decodedText + "&scanner=HIMMA")
+      .then(res => res.text())
+      .then(data => {
 
-          // 🔄 Reset after 3 seconds
-          setTimeout(() => {
-            scanned = false;
-            document.body.style.background = "#111";
-            document.getElementById("result").innerHTML = "Ready for next scan";
-          }, 3000);
-        });
+        document.getElementById("result").innerHTML = data;
 
-    }
-  ).catch(err => {
-    console.log(err);
+        if (data.includes("Allowed")) {
+          document.body.style.background = "green";
+        } else {
+          document.body.style.background = "red";
+        }
+
+        setTimeout(() => {
+          scanned = false;
+          document.body.style.background = "#111";
+          document.getElementById("result").innerHTML = "Ready for next scan";
+        }, 3000);
+
+      });
+
   });
 }
 </script>
