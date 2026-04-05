@@ -19,27 +19,40 @@ let scanned = false;
 let html5QrCode;
 
 function startScanner() {
+
   html5QrCode = new Html5Qrcode("reader");
 
   html5QrCode.start(
     { facingMode: "environment" },
     { fps: 10, qrbox: 250 },
+
     (decodedText) => {
 
       if (scanned) return;
       scanned = true;
+
+      document.getElementById("result").innerHTML = "Processing...";
 
       // 🔐 Send secure request
       fetch(decodedText + "&scanner=HIMMA")
         .then(res => res.text())
         .then(data => {
 
-          document.getElementById("result").innerHTML = data;
-
-          if (data.includes("Allowed")) {
+          if (data === "ENTRY_ALLOWED") {
             document.body.style.background = "green";
-          } else {
+            document.getElementById("result").innerHTML = "✅ Entry Allowed";
+          }
+          else if (data === "ALREADY_USED") {
             document.body.style.background = "red";
+            document.getElementById("result").innerHTML = "❌ Already Used";
+          }
+          else if (data === "INVALID") {
+            document.body.style.background = "red";
+            document.getElementById("result").innerHTML = "❌ Invalid Ticket";
+          }
+          else {
+            document.body.style.background = "red";
+            document.getElementById("result").innerHTML = "❌ Unauthorized";
           }
 
           // 🔄 Reset after 3 seconds
@@ -48,15 +61,24 @@ function startScanner() {
             document.body.style.background = "#111";
             document.getElementById("result").innerHTML = "Ready for next scan";
           }, 3000);
+
+        })
+        .catch(err => {
+          console.log(err);
+          document.getElementById("result").innerHTML = "Error occurred";
         });
 
+    },
+
+    (errorMessage) => {
+      // ignore scanning errors
     }
+
   ).catch(err => {
-    console.log(err);
+    console.log("Camera start error:", err);
   });
 }
 </script>
-
 
 </body>
 </html>
