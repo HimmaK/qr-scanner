@@ -19,18 +19,18 @@ let html5QrCode;
 function startScanner() {
   html5QrCode = new Html5Qrcode("reader");
 
-  Html5Qrcode.getCameras().then(devices => {
-    html5QrCode.start(
-      devices[0].id,
-      { fps: 10, qrbox: 250 },
-      (decodedText) => {
-        if (scanned) return;
-        scanned = true;
+  html5QrCode.start(
+    { facingMode: "environment" }, // 🔥 THIS forces back camera
+    { fps: 10, qrbox: 250 },
+    (decodedText) => {
+      if (scanned) return;
+      scanned = true;
 
-        // 🔥 AUTO OPEN LINK
-        window.location.href = decodedText;
-      }
-    );
+      // Auto open link
+      window.location.href = decodedText;
+    }
+  ).catch(err => {
+    console.log(err);
   });
 }
 </script>
