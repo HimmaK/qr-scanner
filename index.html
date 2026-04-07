@@ -49,7 +49,8 @@ function startScanner() {
             content =
               "✅ Entry Allowed<br><br>" +
               "🎟️ Ticket: " + parts[1] + "<br>" +
-              "👤 Name: " + parts[2];
+              "👤 Name: " + parts[2] + "<br><br>" +
+              "👥 Total Entries: " + parts[3];
           }
           else if (status === "ALREADY_USED") {
             document.body.style.background = "red";
@@ -57,7 +58,8 @@ function startScanner() {
             content =
               "❌ Already Used<br><br>" +
               "🎟️ Ticket: " + parts[1] + "<br>" +
-              "👤 Name: " + parts[2];
+              "👤 Name: " + parts[2] + "<br><br>"
+              "👥 Total Entries: " + parts[3];
           }
           else if (status === "INVALID") {
             document.body.style.background = "red";
