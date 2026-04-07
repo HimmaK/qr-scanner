@@ -38,29 +38,40 @@ function startScanner() {
         .then(res => res.text())
         .then(data => {
 
-          if (data === "ENTRY_ALLOWED") {
+          let parts = data.split("|");
+          let status = parts[0];
+
+          let content = "";
+
+          if (status === "ENTRY_ALLOWED") {
             document.body.style.background = "green";
-            document.getElementById("result").innerHTML = "✅ Entry Allowed";
+
+            content =
+              "✅ Entry Allowed<br><br>" +
+              "🎟️ Ticket: " + parts[1] + "<br>" +
+              "👤 Name: " + parts[2];
           }
-          else if (data === "ALREADY_USED") {
+          else if (status === "ALREADY_USED") {
             document.body.style.background = "red";
-            document.getElementById("result").innerHTML = "❌ Already Used";
+
+            content =
+              "❌ Already Used<br><br>" +
+              "🎟️ Ticket: " + parts[1] + "<br>" +
+              "👤 Name: " + parts[2];
           }
-          else if (data === "INVALID") {
+          else if (status === "INVALID") {
             document.body.style.background = "red";
-            document.getElementById("result").innerHTML = "❌ Invalid Ticket";
+            content = "❌ Invalid Ticket";
           }
           else {
             document.body.style.background = "red";
-            document.getElementById("result").innerHTML = "❌ Unauthorized";
+            content = "❌ Unauthorized";
           }
 
-          // 🔄 Reset after 3 seconds
-          setTimeout(() => {
-            scanned = false;
-            document.body.style.background = "#111";
-            document.getElementById("result").innerHTML = "Ready for next scan";
-          }, 3000);
+          // 👉 Show message + OK button
+          document.getElementById("result").innerHTML =
+            content +
+            "<br><br><button onclick='resetScanner()' style='padding:12px 25px;font-size:16px;border-radius:8px;'>OK</button>";
 
         })
         .catch(err => {
@@ -77,6 +88,13 @@ function startScanner() {
   ).catch(err => {
     console.log("Camera start error:", err);
   });
+}
+
+// 👉 Reset function (for OK button)
+function resetScanner() {
+  scanned = false;
+  document.body.style.background = "#111";
+  document.getElementById("result").innerHTML = "Ready for next scan";
 }
 </script>
 
